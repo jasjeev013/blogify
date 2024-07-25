@@ -1,6 +1,8 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const path = require('path')
+const cookieParser = require('cookie-parser');
+const checkForAuthenticationCookie = require('./middlewares/authentication')
 
 const app = express();
 const PORT = 3000;
@@ -14,15 +16,20 @@ app.set('views', path.resolve('./views'))
 
 
 app.use(express.urlencoded({extended:false}));
+app.use(cookieParser());
+app.use(checkForAuthenticationCookie('token'))
 
 
 const userRoute = require('./routes/users');
+
 
 app.use('/user', userRoute);
 
 
 app.get('/', (req, res, next) => {
-    res.render('home')
+    res.render('home',{
+        user:req.user,
+    })
 })
 
 
